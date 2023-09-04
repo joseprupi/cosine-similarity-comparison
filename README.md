@@ -4,7 +4,7 @@ Performance comparison of different implementations of cosine similarity. The ti
 | --- | ----------- |
 | Numpy | 0.6999 |
 | Scipy (from the library) | 0.9893 |
-| C++ | Text |
-| Vectorized C++ | Text |
+| C++ | 2.6558 |
+| Vectorized C++ | 0.5319 |
 | C++ with O3 optimization | 0.4251 |
 | Vectorized C++ with O3 optimization | 0.0893 |

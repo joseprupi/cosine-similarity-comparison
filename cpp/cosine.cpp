@@ -26,7 +26,7 @@ float cosine_similarity(float *A, float *B)
     return dot / (sqrt(denom_a) * sqrt(denom_b));
 }
 
-inline const float simd_horizontal_sum(__m256 &r)
+inline float simd_horizontal_sum(__m256 &r)
 {
     __m128 r4 = _mm_add_ps(_mm256_castps256_ps128(r), _mm256_extractf128_ps(r, 1));
     __m128 r2 = _mm_add_ps(r4, _mm_movehl_ps(r4, r4));
@@ -34,7 +34,7 @@ inline const float simd_horizontal_sum(__m256 &r)
     return _mm_cvtss_f32(r1);
 }
 
-const float cosine_similarity_simd(float *A, float *B)
+float cosine_similarity_simd(float *A, float *B)
 {
 
     __m256 sum_dot = _mm256_setzero_ps();
@@ -51,9 +51,9 @@ const float cosine_similarity_simd(float *A, float *B)
         sum_B = _mm256_fmadd_ps(buf2, buf2, sum_B);
     }
 
-    const float float_dot = simd_horizontal_sum(sum_dot);
-    const float float_A_norm = simd_horizontal_sum(sum_A);
-    const float float_B_norm = simd_horizontal_sum(sum_B);
+    float float_dot = simd_horizontal_sum(sum_dot);
+    float float_A_norm = simd_horizontal_sum(sum_A);
+    float float_B_norm = simd_horizontal_sum(sum_B);
 
     return float_dot / (sqrt(float_A_norm) * sqrt(float_B_norm));
 }
@@ -82,7 +82,7 @@ int main()
     for (int i = 0; i < EXECUTIONS; i++)
     {
         auto t1 = high_resolution_clock::now();
-        const float sim = cosine_similarity(&A[0], &B[0]);
+        cosine_similarity(&A[0], &B[0]);
         auto t2 = high_resolution_clock::now();
         duration = t2 - t1;
         normal_accum += duration.count();
@@ -92,7 +92,7 @@ int main()
     for (int i = 0; i < EXECUTIONS; i++)
     {
         auto t1 = high_resolution_clock::now();
-        const float sim = cosine_similarity_simd(&A[0], &B[0]);
+        cosine_similarity_simd(&A[0], &B[0]);
         auto t2 = high_resolution_clock::now();
         duration = t2 - t1;
         simd_accum += duration.count();
