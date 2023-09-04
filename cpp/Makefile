@@ -7,7 +7,7 @@
 CXX = g++
 
 all: cosine.cpp
-	@${CXX} cosine.cpp -O3 -o cosine 
+	@${CXX} cosine.cpp -O2 -march=native -o cosine 
 
 clean:
 	@rm -f cosine
