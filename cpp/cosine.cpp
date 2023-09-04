@@ -4,6 +4,7 @@
 #include <chrono>
 #include <cassert>
 #include <sstream>
+#include <fstream>
 
 #include <immintrin.h>
 
@@ -49,44 +50,27 @@ const float cosine_similarity_simd(float *A, float *B)
         sum_B = _mm256_fmadd_ps(buf2, buf2, sum_B);
     }
 
-    // __m128 r4 = _mm_add_ps(_mm256_castps256_ps128(sum_dot), _mm256_extractf128_ps(sum_dot, 1));
-    // __m128 r2 = _mm_add_ps(r4, _mm_movehl_ps(r4, r4));
-    // __m128 r1 = _mm_add_ss(r2, _mm_movehdup_ps(r2));
-    // const float float_dot = _mm_cvtss_f32(r1);
-
-    // r4 = _mm_add_ps(_mm256_castps256_ps128(sum_A), _mm256_extractf128_ps(sum_A, 1));
-    // r2 = _mm_add_ps(r4, _mm_movehl_ps(r4, r4));
-    // r1 = _mm_add_ss(r2, _mm_movehdup_ps(r2));
-    // const float float_A_norm = _mm_cvtss_f32(r1);
-
-    // r4 = _mm_add_ps(_mm256_castps256_ps128(sum_B), _mm256_extractf128_ps(sum_B, 1));
-    // r2 = _mm_add_ps(r4, _mm_movehl_ps(r4, r4));
-    // r1 = _mm_add_ss(r2, _mm_movehdup_ps(r2));
-    // const float float_B_norm = _mm_cvtss_f32(r1);
-
     const float float_dot = simd_horizontal_sum(sum_dot);
     const float float_A_norm = simd_horizontal_sum(sum_A);
     const float float_B_norm = simd_horizontal_sum(sum_B);
 
-    const float result = float_dot / (sqrt(float_A_norm) * sqrt(float_B_norm));
-    return result;
+    return float_dot / (sqrt(float_A_norm) * sqrt(float_B_norm));
 }
 
 int main()
 {
 
-    // use separator to read parts of the line
-    std::istringstream input2;
-    input2.str("a;b;c;d");
-    for (std::string line; std::getline(input2, line, ';');)
-        std::cout << line << '\n';
-
     __attribute__((aligned(32))) float A[SIZE], B[SIZE];
 
-    for (int i = 0; i < SIZE; i++)
-    {
-        A[i] = 1;
-        B[i] = i;
+    FILE *fp;
+    fp = fopen("../vectors.csv", "r");
+
+    float a, b;
+    int i = 0;
+    while (fscanf(fp, "%g,%g\n", &a, &b) == 2){
+        A[i] = a;
+        B[i] = b;
+        i += 1;
     }
 
     // Regular
@@ -95,7 +79,6 @@ int main()
     auto t2 = high_resolution_clock::now();
 
     std::cout << sim << "\n";
-
     duration<double, std::milli> normal_duration = t2 - t1;
 
     // SIMD
@@ -104,7 +87,6 @@ int main()
     t2 = high_resolution_clock::now();
 
     std::cout << sim_simd << "\n";
-
     duration<double, std::milli> simd_duration = t2 - t1;
 
     std::cout << normal_duration.count() << "ms\n";
