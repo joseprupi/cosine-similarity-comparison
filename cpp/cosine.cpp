@@ -12,8 +12,9 @@ using namespace std;
 using namespace std::chrono;
 
 int SIZE = 640000;
+int EXECUTIONS = 1000;
 
-double cosine_similarity(float *A, float *B)
+float cosine_similarity(float *A, float *B)
 {
     float dot = 0.0, denom_a = 0.0, denom_b = 0.0;
     for (auto i = 0; i < SIZE; ++i)
@@ -63,32 +64,40 @@ int main()
     __attribute__((aligned(32))) float A[SIZE], B[SIZE];
 
     FILE *fp;
-    fp = fopen("../vectors.csv", "r");
+    fp = fopen("../tools/vectors.csv", "r");
 
     float a, b;
     int i = 0;
-    while (fscanf(fp, "%g,%g\n", &a, &b) == 2){
+    while (fscanf(fp, "%g,%g\n", &a, &b) == 2)
+    {
         A[i] = a;
         B[i] = b;
         i += 1;
     }
 
-    // Regular
-    auto t1 = high_resolution_clock::now();
-    const float sim = cosine_similarity(&A[0], &B[0]);
-    auto t2 = high_resolution_clock::now();
+    duration<double, std::milli> duration;
+    double normal_accum, simd_accum = 0.0;
 
-    std::cout << sim << "\n";
-    duration<double, std::milli> normal_duration = t2 - t1;
+    // Regular
+    for (int i = 0; i < EXECUTIONS; i++)
+    {
+        auto t1 = high_resolution_clock::now();
+        const float sim = cosine_similarity(&A[0], &B[0]);
+        auto t2 = high_resolution_clock::now();
+        duration = t2 - t1;
+        normal_accum += duration.count();
+    }
 
     // SIMD
-    t1 = high_resolution_clock::now();
-    const float sim_simd = cosine_similarity_simd(&A[0], &B[0]);
-    t2 = high_resolution_clock::now();
+    for (int i = 0; i < EXECUTIONS; i++)
+    {
+        auto t1 = high_resolution_clock::now();
+        const float sim = cosine_similarity_simd(&A[0], &B[0]);
+        auto t2 = high_resolution_clock::now();
+        duration = t2 - t1;
+        simd_accum += duration.count();
+    }
 
-    std::cout << sim_simd << "\n";
-    duration<double, std::milli> simd_duration = t2 - t1;
-
-    std::cout << normal_duration.count() << "ms\n";
-    std::cout << simd_duration.count() << "ms\n";
+    std::cout << normal_accum / EXECUTIONS << " ms\n";
+    std::cout << simd_accum / EXECUTIONS << " ms\n";
 }
