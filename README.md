@@ -7,7 +7,7 @@ Setup:
 * Python 3.11.2
 
 To generate the random vectors:
-* Execute the all the cells from the tools/generate/generate.ipynb notebook
+* Execute the cells from the tools/generate.ipynb notebook
 
 To generate the C++ results:
 ```
@@ -17,7 +17,10 @@ chmod +x run.sh
 ./run.sh
 ```
 
-| Implemntation | Time (ms) |
+To generate the python results:
+* Execute the cells from the python_np/python_np.ipynb notebook
+
+| Implementation | Time (ms) |
 | --- | ----------- |
 | C++ | 2.3839 |
 | Numpy | 0.6777 |
