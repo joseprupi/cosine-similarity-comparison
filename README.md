@@ -5,6 +5,8 @@ Setup:
 * 64GB RAM
 * Debian 12
 * Python 3.11.2
+* scipy 1.13.0
+* numpy 1.26.4
 
 To generate the random vectors:
 * Execute the cells from the tools/generate.ipynb notebook
