@@ -1,4 +1,4 @@
-[A not so fast implementation of cosine similarity in C++ and SIMD]([URL](https://joseprupi.github.io/misc/2024/07/08/cosine-similarity-simd-implementation.html))
+[A not so fast implementation of cosine similarity in C++ and SIMD](https://joseprupi.github.io/misc/2024/07/08/cosine-similarity-simd-implementation.html)
 
 Performance comparison of different implementations of cosine similarity. The time is from calculating the similarity of two random vectors of size 640000.
 
